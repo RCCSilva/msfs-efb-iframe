@@ -20,10 +20,11 @@ URL, load the project with Developer Mode, and it appears as an app inside the E
         └── Assets/app-icon.svg
 ```
 
-> **Status.** The project structure and the app logic are the ones of a private project
-> that was confirmed working in MSFS 2024 (app listed in the EFB, page rendered in the
-> frame). This generic, renamed version has not been run in the sim by its author yet.
-> If something breaks, please open an issue with the Developer Mode console output.
+> **Status.** Tested in MSFS 2024 (2026-10-11): the app is listed in the EFB and the
+> frame loads a page from a local server — confirmed by the server receiving the page
+> and its assets from the simulator's `CoherentGT` user agent. Remote `https://` pages
+> have **not** been tested. If something breaks, please open an issue with the
+> Developer Mode console output.
 
 ---
 
@@ -130,6 +131,18 @@ Then (these are only consistency, not hard requirements):
 * if you rename the package (`mycompany-efb-iframeapp`): the XML file name, the two
   `ContentInfo` paths and the `<Package>` line in `EfbIframeAppProject.xml` must follow;
 * if you rename the project: the file name and `Name="…"` in `EfbIframeAppProject.xml`.
+
+## Credits
+
+* **Asobo Studio — MSFS SDK, *EFB Template Sample*.** The project layout
+  (`Project.xml` + `PackageDefinitions` + `PackageSources`, `Copy` asset group) and the app
+  contract (`App.d.ts`, `efb_api`) come from the official SDK sample.
+* **[lstealth/EFB-OSM-Moving-Map](https://github.com/lstealth/EFB-OSM-Moving-Map)** — where
+  the idea of a *plain-JavaScript, no-build-step* EFB app registering through
+  `window.EFB_API` was learned. That repository declares no license; no file from it is
+  included here, and this project is an independent implementation against the official API.
+* **[docs.flightsimulator.com](https://docs.flightsimulator.com/msfs2024/)** for Developer
+  Mode, the Project Editor and the SDK installer.
 
 ## License
 
