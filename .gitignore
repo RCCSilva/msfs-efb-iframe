@@ -2,3 +2,6 @@
 /Packages/
 /PackagesMetadata/
 /_PackageInt/
+
+# Developer Mode per-user editor state
+*.user

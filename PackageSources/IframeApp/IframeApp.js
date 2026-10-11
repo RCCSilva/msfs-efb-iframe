@@ -77,7 +77,7 @@
     document.head.appendChild(el);
   }
 
-  function makeViewClass(sdk) {
+  function createViewClass(sdk) {
     return class IframeAppView extends sdk.DisplayComponent {
       constructor(props) {
         super(props);
@@ -209,13 +209,15 @@
     };
   }
 
-  function register() {
+  // Returns true once the app has been handed to the EFB container.
+  // Returns false while the EFB or the SDK globals are not available yet.
+  function registerApp() {
     var sdk = getSdk();
     var efb = window.EFB_API;
     if (!sdk || !efb || typeof efb.use !== 'function') return false;
 
     injectStyle();
-    var View = makeViewClass(sdk);
+    var View = createViewClass(sdk);
 
     class IframeApp {
       constructor() {
@@ -266,12 +268,23 @@
     return true;
   }
 
-  // The EFB OS and this script load independently: retry until both are ready.
-  var tries = 0;
-  var retry = window.setInterval(function () {
-    tries += 1;
-    var done = false;
-    try { done = register(); } catch (e) { done = false; }
-    if (done || tries > 200) window.clearInterval(retry);
-  }, 50);
+  // The EFB OS and this script load independently, and efb.use() throws until the
+  // EFB has handed over its event bus. Poll with a bounded number of attempts
+  // (REGISTER_RETRY_MS x REGISTER_MAX_ATTEMPTS = ~15 s) and give up silently after that.
+  var REGISTER_RETRY_MS = 100;
+  var REGISTER_MAX_ATTEMPTS = 150;
+
+  function registerWhenReady(attempt) {
+    var registered = false;
+    try {
+      registered = registerApp();
+    } catch (e) {
+      registered = false; // EFB not ready yet (e.g. "Bus has not been initialized yet.")
+    }
+    if (!registered && attempt < REGISTER_MAX_ATTEMPTS) {
+      window.setTimeout(function () { registerWhenReady(attempt + 1); }, REGISTER_RETRY_MS);
+    }
+  }
+
+  registerWhenReady(1);
 })();
