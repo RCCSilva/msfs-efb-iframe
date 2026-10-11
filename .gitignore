@@ -1,0 +1,4 @@
+# Developer Mode build output (produced next to the project file by "Build All In Project")
+/Packages/
+/PackagesMetadata/
+/_PackageInt/
